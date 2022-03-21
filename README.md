@@ -1,8 +1,7 @@
 # garbage_classification
 
-- 图像分类分支
-- H5Game分支
-- 进入页面分支
+- CV分支
+- front分支
 
 
 
