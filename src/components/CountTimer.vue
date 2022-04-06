@@ -1,7 +1,7 @@
 <template>
     <div class="border">
         <div class="seconds">{{left}}s</div>
-        <div class="fill" :style="{width: 150*precentage+'px',backgroundColor: color}"></div>
+        <div class="fill" :style="{width: 200*precentage+'px',backgroundColor: color}"></div>
     </div>
     
 </template>
@@ -12,11 +12,11 @@ export default {
     data(){
         return{
             //总时间,可以更改
-            total: 20,
+            total: 1,
             //剩余时间，无需变动，开始时会自动等于总时间
             left: 0,
             //加时道具，一次加多少时间
-            addAmount: 5,
+            addAmount: 15,
             precentage: 1,
             color: '#7FFFAA'
         }
@@ -64,16 +64,18 @@ export default {
 /* 时间条的外边框 */
 .border {
     position: relative;
-    width: 150px;
+    width: 200px;
     height: 15px;
+    left: 10px;
     border: 2px solid orange;
     border-radius: 8px;
 }
 /* 时间条的秒数显示 */
 .seconds {
     position: absolute;
-    left: 67px;
+    left: 87px;
     font-size: 10px;
+    line-height: 15px;
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-weight: 700;
 }

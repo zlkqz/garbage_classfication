@@ -1,24 +1,27 @@
 <template>
   <div id="app">
-   <DragE></DragE>
+    <router-view/>
   </div>
 </template>
 
 <script>
-import DragE from "../src/components/DragE.vue"
+// import DragE from "../src/components/DragE.vue"
 export default {
   name: 'App',
   components: {
-  DragE
+  // DragE
       },
 }
 </script>
 
 <style>
+* {
+  margin: 0;
+  padding: 0;
+}
 body{
-      background-image: url('https://img2.baidu.com/it/u=3503127813,1774533560&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500') ;
-      
-      background-repeat: no-repeat;
-      overflow: hidden;
+    position: relative;
+    background: url('assets/preview.jpg') no-repeat center center;
+    background-size: cover;
 }
 </style>
