@@ -1,8 +1,5 @@
 # garbage_classification
 
-- CV分支
-- front分支
-
 
 
 - 需求：
