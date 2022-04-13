@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input type="file" id="alley" multiple>预定类型：
+    <select id="needType">
+        <option></option>
+        <option>可回收垃圾</option>
+        <option>厨余垃圾</option>
+        <option>其他垃圾</option>
+        <option>有害垃圾</option>
+    </select>&nbsp;
+    <button id="clk">开始检测</button>
+    <button id="clk1">中断检测</button><br>
+    <span>通过/选取总计: <span id="passed">0</span>/<span id="total">0</span></span>&nbsp;&nbsp;&nbsp;
+    <span>正确率: <span id="prec">~</span>%</span><br>
+    <span style="font-size: 12px;">注意：有时服务器繁忙，识别速度可能有点慢</span>
+    <div id="wrongInfo" style="color: red;"></div>
+    <script>
+        const files = document.getElementById('alley');
+        const needType = document.getElementById('needType');
+        const clk = document.getElementById('clk');
+        const passed = document.getElementById('passed');
+        const total = document.getElementById('total');
+        const prec = document.getElementById('prec');
+        const wrongDiv = document.getElementById('wrongInfo');
+
+        let hasPassedAmount = 0;
+        let totalAmount = 0;
+        let uploadedAmount = 0;
+        let wrongInfoAmount = 1;
+        let catalogue;
+        let reader;
+        let xhr;
+        let data;
+        let newDiv;
+        let stopTry = 0;
+
+        const initial = function(){
+            stopTry = 0;
+            uploadedAmount = 0;
+            wrongInfoAmount = 1;
+            prec.innerText = '~';
+            wrongDiv.childNodes.forEach(e => {
+                wrongDiv.remove(e);
+            })
+            passed.innerText = hasPassedAmount = 0;
+            total.innerText = totalAmount = 0;
+        }
+        const tryReco = function(){
+            if(files.files.length == 0){
+                return;
+            }
+            if(!needType.value){
+                return;
+            }
+            stopTry = 1;
+            catalogue = needType.value;
+            total.innerText = totalAmount = files.files.length;
+            uploadfile(files.files[0]);
+        }
+        const uploadfile = function(file){
+            if(uploadedAmount == totalAmount){
+                prec.innerText = ((hasPassedAmount/totalAmount)*100).toFixed(2);
+                return;
+            }
+            reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(){
+                data = JSON.stringify({
+                    img: reader.result.split(',')[1]
+                });
+                xhr = new XMLHttpRequest();
+                xhr.open('post','http://1.117.150.150:5000/predict',true);
+                xhr.setRequestHeader('Content-Type','application/json');
+                xhr.onload = function(){
+                    if(stopTry == 0){
+                        total.innerText = uploadedAmount;
+                        prec.innerText = ((hasPassedAmount/uploadedAmount)*100).toFixed(2);
+                        return;
+                    }
+                    if(xhr.status == 200){
+                        if(xhr.responseText == catalogue){
+                            passed.innerText = ++hasPassedAmount;
+                        }else{
+                            newDiv = document.createElement('div');
+                            newDiv.innerText = wrongInfoAmount+++". "+file.name+' 本来应该为'+catalogue+"，识别结果却为"+xhr.responseText+";";
+                            wrongDiv.appendChild(newDiv);
+                        }
+                    }else{
+                        newDiv = document.createElement('div');
+                        newDiv.innerText = wrongInfoAmount+++". "+file.name+' 无法上传，可能是因为不能识别该图片格式;';
+                        wrongDiv.appendChild(newDiv);
+                        total.innerText = --totalAmount; 
+                    }
+                    uploadfile(files.files[++uploadedAmount]);
+                }
+                xhr.send(data);
+            }
+        }
+
+        clk.addEventListener('click',tryReco,false);
+        clk1.addEventListener('click',function(){
+            stopTry = 0;
+        },false);
+        files.addEventListener('change',initial,false);
+    </script>
+</body>
+</html>
